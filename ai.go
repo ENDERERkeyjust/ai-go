@@ -28,7 +28,6 @@ type RequestBody struct {
 	AgentMode         AgentMode        `json:"agentMode"`
 	TrendingAgentMode AgentMode        `json:"trendingAgentMode"`
 	Messages          []RequestMessage `json:"messages"`
-	Temperature       float32          `json:"temperature"`
 }
 
 type RequestMessage struct {
@@ -57,7 +56,7 @@ func (bot *ChatBot) Send(body RequestBody, Username string) string {
 	req, err := http.NewRequest("POST", API, bytes.NewBuffer(byteData))
 	if err != nil {
 		fmt.Println(err)
-		return "```\n" + err.Error() + "\n```"
+		return err.Error()
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -73,7 +72,7 @@ func (bot *ChatBot) Send(body RequestBody, Username string) string {
 	bodyByte, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Println(err)
-		return "```\n" + err.Error() + "\n```"
+		return err.Error()
 	}
 
 	bot.History = append(bot.History, Message{
@@ -86,12 +85,7 @@ func (bot *ChatBot) Send(body RequestBody, Username string) string {
 
 func (bot *ChatBot) GetHistory() string {
 	var history string
-	for i := len(bot.History) - 1; i > 0; i-- {
-		dif := (len(bot.History) - 1) - i
-		if dif > 25 {
-			break
-		}
-		msg := bot.History[i]
+	for _,msg := range bot.History {
 		history += msg.Author + " messaged \"" + msg.Content + "\";\n"
 	}
 	return history
