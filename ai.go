@@ -76,7 +76,7 @@ func (bot *ChatBot) Send(body RequestBody, Username string) string {
 	}
 
 	bot.History = append(bot.History, Message{
-		Author:  "You",
+		Author:  "Assistant",
 		Content: string(bodyByte),
 	})
 
