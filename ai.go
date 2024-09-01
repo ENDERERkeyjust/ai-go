@@ -6,11 +6,16 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"regexp"
 )
 
 const (
 	API = "https://www.blackbox.ai/api/chat"
 )
+
+var (
+	rxpCleanReply = regexp.MustCompile(`\$\@\$(.*?)\$\@\$(.*?)`)
+)	
 
 type Message struct {
 	Author  string
@@ -75,12 +80,14 @@ func (bot *ChatBot) Send(body RequestBody, Username string) string {
 		return err.Error()
 	}
 
+	reply := rxpCleanReply.ReplaceAllString(string(bodyByte), "")
+
 	bot.History = append(bot.History, Message{
 		Author:  "Assistant",
-		Content: string(bodyByte),
+		Content: reply,
 	})
 
-	return string(bodyByte)
+	return reply
 }
 
 func (bot *ChatBot) GetHistory() string {
